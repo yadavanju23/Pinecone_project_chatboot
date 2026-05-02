@@ -2,6 +2,7 @@ from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
 from typing import List
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from dotenv import load_dotenv
@@ -18,9 +19,8 @@ def load_pdf_files(data):
     documents=loader.load()
     return documents
 
-extracted_data = load_pdf_files("../data")
 
-
+extracted_data = load_pdf_files("data/")
 def filter_to_minimal_docs(docs:List[Document])->List[Document]:
     """Give a list of Docuemnts objects, return a new list of Docuement object
     containing only 'source' in metadata and the original page_content"""
@@ -47,9 +47,8 @@ def text_split(minimal_docs):
 
 
 
-def download_embeddings():
+def download_hugging_face_embeddings():
     model_name = "sentence-transformers/all-MiniLM-L6-v2"
     embeddings = HuggingFaceEmbeddings(model_name=model_name)
     return embeddings
 
-embeddings = download_embeddings()
