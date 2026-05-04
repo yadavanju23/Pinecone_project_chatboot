@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Chatbot</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="chat-container">
+
+    <!-- Header -->
+    <div class="chat-header">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="bot">
+        <div class="info">
+            <h3>Personal Chatbot</h3>
+            <span>Ask me anything!</span>
+        </div>
+    </div>
+
+    <!-- Chat Box -->
+    <div class="chat-box" id="chat-box">
+        <div class="message bot">Hello! How can I help you?</div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+        <input type="text" id="message" placeholder="Type your message...">
+        <button onclick="sendMessage()">➤</button>
+    </div>
+
+</div>
+
+<!-- ✅ JavaScript -->
+<script>
+function sendMessage() {
+    let inputField = document.getElementById("message");
+    let message = inputField.value.trim();
+
+    if (!message) return;
+
+    let chatBox = document.getElementById("chat-box");
+
+    // Add user message
+    chatBox.innerHTML += `<div class="message user">${message}</div>`;
+
+    // Scroll down
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Send to Flask
+    fetch("/get", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "msg=" + encodeURIComponent(message)
+    })
+    .then(response => response.text())
+    .then(data => {
+        // Add bot response
+        chatBox.innerHTML += `<div class="message bot">${data}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    })
+    .catch(error => {
+        chatBox.innerHTML += `<div class="message bot">Error: ${error}</div>`;
+    });
+
+    // Clear input
+    inputField.value = "";
+}
+
+// ✅ Enter key support
+document.getElementById("message").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
+</script>
+
+</body>
+</html>
