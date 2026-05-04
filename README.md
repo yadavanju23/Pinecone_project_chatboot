@@ -1,4 +1,4 @@
-# 🤖 AI Medical Chatbot (RAG + LangChain + Flask)
+# 🤖 AI  Chatbot (RAG + LangChain + Flask)
 
 A conversational AI chatbot built using **LangChain, Pinecone, and Groq**, capable of answering user queries based on custom PDF data using **Retrieval-Augmented Generation (RAG)**.
 
