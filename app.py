@@ -52,12 +52,22 @@ def index():
 
 @app.route("/get", methods=["POST"])
 def chat():
-    msg = request.form.get("msg")   
-    input=msg
-    print(input)
-    response=rag_chain.invoke({"input":msg})
-    print("Response:",response["answer"])
-    return str(response["answer"])
+    try:
+        msg = request.form.get("msg")
+
+        print("User Message:", msg)
+
+        response = rag_chain.invoke({
+            "input": msg
+        })
+
+        print("Full Response:", response)
+
+        return str(response["answer"])
+
+    except Exception as e:
+        print("ERROR:", str(e))
+        return "Error: " + str(e)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
