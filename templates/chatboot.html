@@ -29,54 +29,71 @@
     <!-- Input -->
     <div class="chat-input">
         <input type="text" id="message" placeholder="Type your message...">
-        <button onclick="sendMessage()">➤</button>
+<button id="send-btn">➤</button>
     </div>
 
 </div>
 
 <!-- ✅ JavaScript -->
 <script>
-function sendMessage() {
-    let inputField = document.getElementById("message");
-    let message = inputField.value.trim();
+const sendBtn = document.getElementById("send-btn");
+const inputField = document.getElementById("message");
+const chatBox = document.getElementById("chat-box");
 
-    if (!message) return;
+sendBtn.addEventListener("click", sendMessage);
 
-    let chatBox = document.getElementById("chat-box");
-
-    // Add user message
-    chatBox.innerHTML += `<div class="message user">${message}</div>`;
-
-    // Scroll down
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Send to Flask
-    fetch("/get", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "msg=" + encodeURIComponent(message)
-    })
-    .then(response => response.text())
-    .then(data => {
-        // Add bot response
-        chatBox.innerHTML += `<div class="message bot">${data}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    })
-    .catch(error => {
-        chatBox.innerHTML += `<div class="message bot">Error: ${error}</div>`;
-    });
-
-    // Clear input
-    inputField.value = "";
-}
-
-// ✅ Enter key support
-document.getElementById("message").addEventListener("keypress", function(e) {
+inputField.addEventListener("keypress", function(e) {
     if (e.key === "Enter") {
         sendMessage();
     }
+});
+
+async function sendMessage() {
+
+    const message = inputField.value.trim();
+
+    if (message === "") return;
+
+    // User message
+    const userDiv = document.createElement("div");
+    userDiv.className = "message user";
+    userDiv.innerText = message;
+    chatBox.appendChild(userDiv);
+
+    inputField.value = "";
+
+    // Bot loading
+    const botDiv = document.createElement("div");
+    botDiv.className = "message bot";
+    botDiv.innerText = "Typing...";
+    chatBox.appendChild(botDiv);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+
+        const response = await fetch("/get", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `msg=${encodeURIComponent(message)}`
+        });
+
+        const data = await response.text();
+
+        botDiv.innerText = data;
+
+    } catch (error) {
+
+        botDiv.innerText = "Error connecting to server.";
+
+        console.log(error);
+    }
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+</script>
 });
 </script>
 
