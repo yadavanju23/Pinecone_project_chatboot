@@ -35,17 +35,63 @@
 </div>
 
 <!-- ✅ JavaScript -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Chatbot</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="chat-container">
+
+    <!-- Header -->
+    <div class="chat-header">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="bot">
+
+        <div class="info">
+            <h3>Personal Chatbot</h3>
+            <span>Ask me anything!</span>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-box" id="chat-box">
+        <div class="message bot">
+            Hello! How can I help you?
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+        <input
+            type="text"
+            id="message"
+            placeholder="Type your message..."
+        >
+
+        <button id="send-btn">➤</button>
+    </div>
+
+</div>
+
 <script>
+
 const sendBtn = document.getElementById("send-btn");
 const inputField = document.getElementById("message");
 const chatBox = document.getElementById("chat-box");
 
 sendBtn.addEventListener("click", sendMessage);
 
-inputField.addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
+inputField.addEventListener("keypress", function(event) {
+
+    if (event.key === "Enter") {
         sendMessage();
     }
+
 });
 
 async function sendMessage() {
@@ -56,16 +102,22 @@ async function sendMessage() {
 
     // User message
     const userDiv = document.createElement("div");
+
     userDiv.className = "message user";
+
     userDiv.innerText = message;
+
     chatBox.appendChild(userDiv);
 
     inputField.value = "";
 
     // Bot loading
     const botDiv = document.createElement("div");
+
     botDiv.className = "message bot";
+
     botDiv.innerText = "Typing...";
+
     chatBox.appendChild(botDiv);
 
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -73,26 +125,33 @@ async function sendMessage() {
     try {
 
         const response = await fetch("/get", {
+
             method: "POST",
+
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: `msg=${encodeURIComponent(message)}`
+
+            body: "msg=" + encodeURIComponent(message)
+
         });
 
         const data = await response.text();
 
         botDiv.innerText = data;
 
-    } catch (error) {
+    }
+    catch(error) {
 
-        botDiv.innerText = "Error connecting to server.";
+        botDiv.innerText = "Server Error";
 
         console.log(error);
+
     }
 
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 </script>
 
 
