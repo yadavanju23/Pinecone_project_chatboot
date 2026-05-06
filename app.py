@@ -6,7 +6,7 @@ from flask import request
 # Safe imports (only import, don't execute anything heavy)
 from src.helper import download_hugging_face_embeddings
 from src.prompt import system_prompt
-from langchain_pinecone import PineconeVectorStore
+from langchain_community.vectorstores import Pinecone
 from langchain_groq import ChatGroq
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -23,7 +23,7 @@ os.environ["GROQ_API_KEY"]=GROQ_API_KEY
 
 embeddings=download_hugging_face_embeddings()
 index_name = "pinecone-research-trails"
-docsearch=PineconeVectorStore.from_existing_index(
+docsearch = Pinecone.from_existing_index(
     index_name=index_name,
     embedding=embeddings
 )
